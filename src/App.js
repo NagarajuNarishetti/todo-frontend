@@ -1,36 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import axios from "axios";
 
 import Home from "./pages/Home";
 import AddTodo from "./pages/AddTodo";
 import EditTodo from "./pages/EditTodo";
 
+const API_URL = "https://todo-backend-1yey.onrender.com";
+
 function App() {
-  const [todos, setTodos] = useState([
-    { id: 1, title: "Learn React", description: "Start React tutorial", done: false },
-    { id: 2, title: "Build Todo App", description: "Create a CRUD todo app", done: false },
-  ]);
+  const [todos, setTodos] = useState([]);
 
+  // Fetch todos from backend on mount
+  useEffect(() => {
+    axios.get(`${API_URL}/todos`)
+      .then(res => setTodos(res.data))
+      .catch(err => console.error("Error fetching todos:", err));
+  }, []);
+
+  // Toggle done status and update backend
   const toggleDone = (id) => {
-    setTodos(todos.map(todo => todo.id === id ? { ...todo, done: !todo.done } : todo));
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+
+    axios.put(`${API_URL}/todos/${id}`, { ...todo, done: !todo.done })
+      .then(res => {
+        setTodos(todos.map(t => t.id === id ? res.data : t));
+      })
+      .catch(err => console.error("Error toggling todo:", err));
   };
 
+  // Add new todo via backend
   const addTodo = (title, description) => {
-    const newTodo = {
-      id: todos.length ? Math.max(...todos.map(t => t.id)) + 1 : 1,
-      title,
-      description,
-      done: false,
-    };
-    setTodos([...todos, newTodo]);
+    axios.post(`${API_URL}/todos`, { title, description, done: false })
+      .then(res => setTodos([...todos, res.data]))
+      .catch(err => console.error("Error adding todo:", err));
   };
 
+  // Edit todo via backend
   const editTodo = (id, updatedTodo) => {
-    setTodos(todos.map(todo => todo.id === id ? { ...todo, ...updatedTodo } : todo));
+    axios.put(`${API_URL}/todos/${id}`, updatedTodo)
+      .then(res => {
+        setTodos(todos.map(t => t.id === id ? res.data : t));
+      })
+      .catch(err => console.error("Error editing todo:", err));
   };
 
+  // Delete todo via backend
   const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    axios.delete(`${API_URL}/todos/${id}`)
+      .then(() => {
+        setTodos(todos.filter(t => t.id !== id));
+      })
+      .catch(err => console.error("Error deleting todo:", err));
   };
 
   return (
