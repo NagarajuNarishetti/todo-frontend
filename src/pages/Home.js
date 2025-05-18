@@ -12,7 +12,7 @@ export default function Home({ todos, toggleDone, deleteTodo }) {
         <ul style={{ listStyle: "none", padding: 0 }}>
           {todos.map((todo) => (
             <li
-              key={todo.id}
+              key={todo._id}  // updated here
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -35,7 +35,7 @@ export default function Home({ todos, toggleDone, deleteTodo }) {
               <input
                 type="checkbox"
                 checked={todo.done}
-                onChange={() => toggleDone(todo.id)}
+                onChange={() => toggleDone(todo._id)} // updated here
                 style={{
                   width: 20,
                   height: 20,
@@ -62,7 +62,7 @@ export default function Home({ todos, toggleDone, deleteTodo }) {
               </div>
 
               <Link
-                to={`/edit/${todo.id}`}
+                to={`/edit/${todo._id}`}  // updated here
                 style={{
                   marginRight: 15,
                   color: "#007bff",
@@ -75,7 +75,7 @@ export default function Home({ todos, toggleDone, deleteTodo }) {
               </Link>
 
               <button
-                onClick={() => deleteTodo(todo.id)}
+                onClick={() => deleteTodo(todo._id)} // updated here
                 style={{
                   backgroundColor: "#e74c3c",
                   border: "none",

@@ -5,8 +5,8 @@ export default function EditTodo({ todos, editTodo }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Find todo by id
-  const todo = todos.find((t) => t.id === parseInt(id));
+  // Find todo by _id (not id)
+  const todo = todos.find((t) => t._id === id);
 
   const [title, setTitle] = useState(todo ? todo.title : "");
   const [description, setDescription] = useState(todo ? todo.description : "");
@@ -17,7 +17,7 @@ export default function EditTodo({ todos, editTodo }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    editTodo(todo.id, { title, description }); // call editTodo from props
+    editTodo(todo._id, { title, description }); // use _id here
     navigate("/");
   };
 

@@ -1,47 +1,72 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import AddTodo from "./AddTodo";
 import EditTodo from "./EditTodo";
 
 function App() {
-  const [todos, setTodos] = useState(() => {
-    const saved = localStorage.getItem("todos");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [todos, setTodos] = useState([]);
 
-  const addTodo = (title, description) => {
-    const newTodo = {
-      id: Date.now(),
-      title,
-      description,
-      done: false,
-    };
-    const updated = [...todos, newTodo];
-    setTodos(updated);
-    localStorage.setItem("todos", JSON.stringify(updated));
+  // Fetch todos from backend on component mount
+  useEffect(() => {
+    fetch("/api/todos")
+      .then((res) => res.json())
+      .then((data) => setTodos(data))
+      .catch(console.error);
+  }, []);
+
+  const addTodo = async (title, description) => {
+    try {
+      const res = await fetch("/api/todos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, done: false }),
+      });
+      const newTodo = await res.json();
+      setTodos([...todos, newTodo]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const editTodo = (id, updatedData) => {
-    const updated = todos.map((todo) =>
-      todo.id === id ? { ...todo, ...updatedData } : todo
-    );
-    setTodos(updated);
-    localStorage.setItem("todos", JSON.stringify(updated));
+  const editTodo = async (id, updatedData) => {
+    try {
+      const res = await fetch(`/api/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+      const updatedTodo = await res.json();
+      setTodos(todos.map((todo) => (todo._id === id ? updatedTodo : todo)));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const toggleDone = (id) => {
-    const updated = todos.map((todo) =>
-      todo.id === id ? { ...todo, done: !todo.done } : todo
-    );
-    setTodos(updated);
-    localStorage.setItem("todos", JSON.stringify(updated));
+  const toggleDone = async (id) => {
+    const todo = todos.find((t) => t._id === id);
+    if (!todo) return;
+
+    try {
+      const res = await fetch(`/api/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ done: !todo.done }),
+      });
+      const updatedTodo = await res.json();
+      setTodos(todos.map((t) => (t._id === id ? updatedTodo : t)));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const deleteTodo = (id) => {
-    const updated = todos.filter((todo) => todo.id !== id);
-    setTodos(updated);
-    localStorage.setItem("todos", JSON.stringify(updated));
+  const deleteTodo = async (id) => {
+    try {
+      await fetch(`/api/todos/${id}`, { method: "DELETE" });
+      setTodos(todos.filter((todo) => todo._id !== id));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -52,10 +77,7 @@ function App() {
           element={<Home todos={todos} toggleDone={toggleDone} deleteTodo={deleteTodo} />}
         />
         <Route path="/add" element={<AddTodo addTodo={addTodo} />} />
-        <Route
-          path="/edit/:id"
-          element={<EditTodo todos={todos} editTodo={editTodo} />}
-        />
+        <Route path="/edit/:id" element={<EditTodo todos={todos} editTodo={editTodo} />} />
       </Routes>
     </div>
   );
