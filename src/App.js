@@ -6,54 +6,63 @@ import Home from "./pages/Home";
 import AddTodo from "./pages/AddTodo";
 import EditTodo from "./pages/EditTodo";
 
-const API_URL = "https://todo-backend-1yey.onrender.com";
+const backendURL = "https://todo-backend-1yey.onrender.com";
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch todos from backend on mount
   useEffect(() => {
-    axios.get(`${API_URL}/todos`)
-      .then(res => setTodos(res.data))
-      .catch(err => console.error("Error fetching todos:", err));
+    axios.get(`${backendURL}/todos`)
+      .then(res => {
+        setTodos(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch todos:", err);
+        setLoading(false);
+      });
   }, []);
 
-  // Toggle done status and update backend
   const toggleDone = (id) => {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
 
-    axios.put(`${API_URL}/todos/${id}`, { ...todo, done: !todo.done })
+    axios.put(`${backendURL}/todos/${id}`, { done: !todo.done })
       .then(res => {
-        setTodos(todos.map(t => t.id === id ? res.data : t));
+        setTodos(todos.map(t => (t.id === id ? res.data : t)));
       })
-      .catch(err => console.error("Error toggling todo:", err));
+      .catch(err => console.error("Failed to toggle done:", err));
   };
 
-  // Add new todo via backend
   const addTodo = (title, description) => {
-    axios.post(`${API_URL}/todos`, { title, description, done: false })
-      .then(res => setTodos([...todos, res.data]))
-      .catch(err => console.error("Error adding todo:", err));
-  };
-
-  // Edit todo via backend
-  const editTodo = (id, updatedTodo) => {
-    axios.put(`${API_URL}/todos/${id}`, updatedTodo)
+    axios.post(`${backendURL}/todos`, { title, description, done: false })
       .then(res => {
-        setTodos(todos.map(t => t.id === id ? res.data : t));
+        setTodos([...todos, res.data]);
       })
-      .catch(err => console.error("Error editing todo:", err));
+      .catch(err => console.error("Failed to add todo:", err));
   };
 
-  // Delete todo via backend
+  const editTodo = (id, updatedTodo) => {
+    axios.put(`${backendURL}/todos/${id}`, updatedTodo)
+      .then(res => {
+        setTodos(todos.map(t => (t.id === id ? res.data : t)));
+      })
+      .catch(err => console.error("Failed to edit todo:", err));
+  };
+
   const deleteTodo = (id) => {
-    axios.delete(`${API_URL}/todos/${id}`)
+    axios.delete(`${backendURL}/todos/${id}`)
       .then(() => {
         setTodos(todos.filter(t => t.id !== id));
       })
-      .catch(err => console.error("Error deleting todo:", err));
+      .catch(err => console.error("Failed to delete todo:", err));
   };
+
+  if (loading) {
+    return <div style={{ textAlign: "center", marginTop: 50 }}>Loading todos...</div>;
+  }
 
   return (
     <Router>
