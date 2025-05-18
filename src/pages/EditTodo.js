@@ -5,25 +5,23 @@ export default function EditTodo({ todos, editTodo }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Find the todo item by id from todos array
-  const todo = todos.find(t => t.id === parseInt(id));
+  // Find todo by id
+  const todo = todos.find((t) => t.id === parseInt(id));
 
-  // Set initial form state from the todo if found
   const [title, setTitle] = useState(todo ? todo.title : "");
   const [description, setDescription] = useState(todo ? todo.description : "");
 
-  // If todo not found (wrong id), redirect to home
   useEffect(() => {
     if (!todo) navigate("/");
   }, [todo, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    editTodo(todo.id, { title, description });
+    editTodo(todo.id, { title, description }); // call editTodo from props
     navigate("/");
   };
 
-  if (!todo) return null; // Prevent rendering if todo not found
+  if (!todo) return null;
 
   return (
     <form
@@ -43,7 +41,7 @@ export default function EditTodo({ todos, editTodo }) {
         type="text"
         placeholder="Title"
         value={title}
-        onChange={e => setTitle(e.target.value)}
+        onChange={(e) => setTitle(e.target.value)}
         required
         style={{
           width: "100%",
@@ -59,7 +57,7 @@ export default function EditTodo({ todos, editTodo }) {
       <textarea
         placeholder="Description (optional)"
         value={description}
-        onChange={e => setDescription(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
         rows={5}
         style={{
           width: "100%",
@@ -87,8 +85,8 @@ export default function EditTodo({ todos, editTodo }) {
           cursor: "pointer",
           transition: "background-color 0.3s ease",
         }}
-        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#2471a3"}
-        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#2980b9"}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2471a3")}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#2980b9")}
       >
         Save Changes
       </button>

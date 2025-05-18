@@ -10,7 +10,7 @@ export default function Home({ todos, toggleDone, deleteTodo }) {
         </p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
-          {todos.map(todo => (
+          {todos.map((todo) => (
             <li
               key={todo.id}
               style={{
@@ -23,8 +23,14 @@ export default function Home({ todos, toggleDone, deleteTodo }) {
                 borderRadius: 8,
                 transition: "box-shadow 0.3s ease",
               }}
-              onMouseEnter={e => e.currentTarget.style.boxShadow = "0 6px 15px rgba(0,0,0,0.15)"}
-              onMouseLeave={e => e.currentTarget.style.boxShadow = "0 3px 10px rgba(0,0,0,0.1)"}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 6px 15px rgba(0,0,0,0.15)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 3px 10px rgba(0,0,0,0.1)")
+              }
             >
               <input
                 type="checkbox"
@@ -81,8 +87,12 @@ export default function Home({ todos, toggleDone, deleteTodo }) {
                   fontSize: 16,
                   transition: "background-color 0.3s ease",
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#c0392b"}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#e74c3c"}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#c0392b")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#e74c3c")
+                }
               >
                 Delete
               </button>

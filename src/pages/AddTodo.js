@@ -8,8 +8,8 @@ export default function AddTodo({ addTodo }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addTodo(title, description);
-    navigate("/");
+    addTodo(title, description); // call addTodo from props (App.js)
+    navigate("/"); // go back to home page after add
   };
 
   return (
@@ -30,7 +30,7 @@ export default function AddTodo({ addTodo }) {
         type="text"
         placeholder="Title"
         value={title}
-        onChange={e => setTitle(e.target.value)}
+        onChange={(e) => setTitle(e.target.value)}
         required
         style={{
           width: "100%",
@@ -46,7 +46,7 @@ export default function AddTodo({ addTodo }) {
       <textarea
         placeholder="Description (optional)"
         value={description}
-        onChange={e => setDescription(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
         rows={5}
         style={{
           width: "100%",
@@ -74,8 +74,8 @@ export default function AddTodo({ addTodo }) {
           cursor: "pointer",
           transition: "background-color 0.3s ease",
         }}
-        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#219150"}
-        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#27ae60"}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#219150")}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#27ae60")}
       >
         Add Todo
       </button>
